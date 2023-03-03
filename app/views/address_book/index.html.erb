@@ -1,0 +1,63 @@
+<head>
+</head>
+<body>
+    <nav>
+    <h1>Address Book</h1>
+    </nav>
+    <div class="container">   
+        <div id="addPersonModal">
+            <h3>Add Person Modal</h3>
+        
+            <%= form_with url: 'person', model: @person do |form| %>
+                <label for="salutation">Salutation</label>
+                <%= form.select :salutation, ['Mr.', 'Mrs.', 'Ms.'] %>
+                <%= form.text_field :firstName, placeholder: "First Name" %>
+                <%= form.text_field :middleName, placeholder: "Middle Name" %>
+                <%= form.text_field :lastName, placeholder: "Last Name" %>
+                <%= form.text_field :ssn, placeholder: "SSN" %>
+                <label for="birthDate">Birth Date</label>
+                <%= form.date_select :birthDate%>
+                <%= form.text_area :comment, size: "10x10" %>
+                <%= form.submit %>
+            <% end %>
+        </div>
+
+        <div class="table-responsives">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h2>Manage Contacts</b></h2>
+                    </div>
+                    <div class="col-xs-6">
+                        <a href="#addPersonModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Person</span></a>
+                        <a href="#deletePersonModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Delete</span></a>						
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>                        
+                                <th>Address</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% @people.each do |person| %>
+                                <tr>
+                                    <td><%= person.fullName %></td>
+                                    <td>ADD</td>
+                                    <td>Ema</td>
+                                    <td>Pho</td>
+                                    <td>Edit <%= button_to "Delete", {:controller => :person,
+      :action => 'delete', :id => person.id }, :method => :delete, class: "btn btn-danger"%></td>
+                                </tr>
+                            <% end %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+<body>
