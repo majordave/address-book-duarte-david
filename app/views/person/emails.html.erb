@@ -1,0 +1,135 @@
+<head>
+</head>
+<body>
+    <nav>
+    <h1>Address Book</h1>
+    </nav>    
+    <div class="container">   
+        <div id="addEmailModal">
+            <h3>Add New Email</h3>
+            <%= form_with url: 'emails', html: {id: "addEmailForm"}, model: @email do |form| %>
+                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
+                <%= form.text_field :emailAddress, placeholder: "Email Address" %>
+                <%= form.text_area :comment, placeholder: "Comment", size: "10x2" %>
+                <%= form.hidden_field :person_id, value: params[:id] %>
+                <%= form.submit %>
+            <% end %>
+            <button id="addEmailClose" class="btn btn-danger">Close</button>
+        </div>
+        <div id="editEmailModal">
+            <h3>Edit Email</h3>
+            <%= form_with url: 'email', method: 'put', html: {id: "editEmailForm"}, model: @email do |form| %>
+                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
+                <%= form.text_field :emailAddress, placeholder: "Email Address" %>
+                <%= form.text_area :comment, placeholder: "Comment", size: "10x2"  %>
+                <%= form.hidden_field :person_id, value: params[:id] %>                                             
+                <%= form.hidden_field :id %>
+                <%= form.submit %>
+            <% end %>
+            <button id="editEmailClose" class="btn btn-danger">Close</button>
+        </div>
+
+        <div class="table-responsives">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h2>Manage <%= @person.fullName  %>'s Emails</b></h2>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a id="addEmailButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Email</span></a>                        
+                        </div>
+                        <div class="col-xs-6">
+                            <a id="addEmailButton" class="btn btn-info" data-toggle="modal" href="/address_book"> <span>Return</span></a>                        
+                        </div>  
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email Address</th> 
+                                <th>Comment</th>                                    
+                            </tr>
+                        </thead>
+                        <tbody id="emailTableBody">
+                            <% @emails.each do |email| %>
+                                <tr id="row-email-<%= email.id %>">
+                                    <td><%= email.emailAddress %></td>
+                                    <td><%= email.comment %></td>                                    
+                                    <td><span><button class="btn btn-warning editEmailButton" data-email-id="<%= email.id %>">Edit</button></span><span><%= button_to "Delete", {:controller => :email,
+      :action => 'delete', :id => email.id }, :method => :delete, class: "btn btn-danger"%></span></td>
+                                </tr>
+                            <% end %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script
+        src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+        crossorigin="anonymous"></script>
+    <script>
+     window.jQuery = window.$ = jQuery;
+
+    function buildRow(data){
+        let deleteBtn = '<form class="button_to" method="post" action="/email/'+data.id+'"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
+        let row = "<td>"+data.emailAddress+"</td><td>"+data.comment+"</td><td><span><button class=\"btn btn-warning editEmailButton\" data-email-id=\""+data.id+"\">Edit</button></span><span>"+deleteBtn+"</span></td>";
+        return row;
+    }
+
+    $(document).on('click', ".editEmailButton", function(){
+        $('#addEmailModal').hide();
+        $.get('/email/'+$(this).data('email-id'), function(){
+            }).done(function(response){            
+                $('#editEmailForm input[id="emailAddress"]').val(response.emailAddress);
+                $('#editEmailForm textArea[id="comment"]').val(response.comment);                
+                $('#editEmailForm input[id="id"]').val(response.id);
+
+                $('#editEmailModal').show();
+            });
+    });
+
+     $(document).ready(function() {
+
+        $("#addEmailForm").submit(function(event){
+            event.preventDefault();
+            $.post('emails', $(this).serialize(), function(){  
+            }).done(function(response){
+                if(response.created){
+                    newRow = buildRow(response);
+                    $('#emailTableBody').append('<tr>'+newRow+'</tr>');
+                }                
+            });
+        });
+
+         $("#addEmailButton").click(function(){
+            
+            $('#addEmailModal').show();
+            $('#editEmailModal').hide();
+         });
+
+         $("#addEmailClose").click(function(){
+            
+            $('#addEmailModal').hide();
+         });
+
+         $("#editEmailForm").submit(function(event){
+            event.preventDefault();
+            $.post('/email', $(this).serialize(), function(){  
+            }).done(function(response){
+                if(response.updated){
+                    let updatedRow = buildRow(response);
+                    $("#row-email-"+response.id).html(updatedRow);
+                }                
+            });
+        });
+
+
+         $("#editEmailClose").click(function(){
+            
+            $('#editEmailModal').hide();
+         });
+     });
+  </script>
+<body>

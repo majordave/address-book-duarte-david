@@ -1,0 +1,135 @@
+<head>
+</head>
+<body>
+    <nav>
+    <h1>Address Book</h1>
+    </nav>    
+    <div class="container">   
+        <div id="addPhoneModal">
+            <h3>Add New Phone</h3>
+            <%= form_with url: 'phones', html: {id: "addPhoneForm"}, model: @phone do |form| %>
+                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
+                <%= form.text_field :phoneNumber, placeholder: "Phone Number" %>
+                <%= form.text_area :comment, placeholder: "Comment", size: "10x2" %>
+                <%= form.hidden_field :person_id, value: params[:id] %>
+                <%= form.submit %>
+            <% end %>
+            <button id="addPhoneClose" class="btn btn-danger">Close</button>
+        </div>
+        <div id="editPhoneModal">
+            <h3>Edit Phone</h3>
+            <%= form_with url: 'phone', method: 'put', html: {id: "editPhoneForm"}, model: @phone do |form| %>
+                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
+                <%= form.text_field :phoneNumber, placeholder: "Phone Number" %>
+                <%= form.text_area :comment, placeholder: "Comment", size: "10x2" %>
+                <%= form.hidden_field :person_id, value: params[:id] %>                                             
+                <%= form.hidden_field :id %>
+                <%= form.submit %>
+            <% end %>
+            <button id="editPhoneClose" class="btn btn-danger">Close</button>
+        </div>
+
+        <div class="table-responsives">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h2>Manage <%= @person.fullName  %>'s Phones</b></h2>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a id="addPhoneButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Phone</span></a>                        
+                        </div>
+                        <div class="col-xs-6">
+                            <a id="addPhoneButton" class="btn btn-info" data-toggle="modal" href="/address_book"> <span>Return</span></a>                        
+                        </div>  
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Phone Number</th> 
+                                <th>Comment</th>                                    
+                            </tr>
+                        </thead>
+                        <tbody id="phoneTableBody">
+                            <% @phones.each do |phone| %>
+                                <tr id="row-phone-<%= phone.id %>">
+                                    <td><%= phone.phoneNumber %></td>
+                                    <td><%= phone.comment %></td>                                    
+                                    <td><span><button class="btn btn-warning editPhoneButton" data-phone-id="<%= phone.id %>">Edit</button></span><span><%= button_to "Delete", {:controller => :phone,
+      :action => 'delete', :id => phone.id }, :method => :delete, class: "btn btn-danger"%></span></td>
+                                </tr>
+                            <% end %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script
+        src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+        crossorigin="anonymous"></script>
+    <script>
+     window.jQuery = window.$ = jQuery;
+
+    function buildRow(data){
+        let deleteBtn = '<form class="button_to" method="post" action="/phone/'+data.id+'"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
+        let row = "<td>"+data.phoneNumber+"</td><td>"+data.comment+"</td><td><span><button class=\"btn btn-warning editPhoneButton\" data-phone-id=\""+data.id+"\">Edit</button></span><span>"+deleteBtn+"</span></td>";
+        return row;
+    }
+
+    $(document).on('click', ".editPhoneButton", function(){
+        $('#addPhoneModal').hide();
+        $.get('/phone/'+$(this).data('phone-id'), function(){
+            }).done(function(response){            
+                $('#editPhoneForm input[id="phoneNumber"]').val(response.phoneNumber);
+                $('#editPhoneForm textArea[id="comment"]').val(response.comment);                
+                $('#editPhoneForm input[id="id"]').val(response.id);
+
+                $('#editPhoneModal').show();
+            });
+    });
+
+     $(document).ready(function() {
+
+        $("#addPhoneForm").submit(function(event){
+            event.preventDefault();
+            $.post('phones', $(this).serialize(), function(){  
+            }).done(function(response){
+                if(response.created){
+                    newRow = buildRow(response);
+                    $('#phoneTableBody').append('<tr>'+newRow+'</tr>');
+                }                
+            });
+        });
+
+         $("#addPhoneButton").click(function(){
+            
+            $('#addPhoneModal').show();
+            $('#editPhoneModal').hide();
+         });
+
+         $("#addPhoneClose").click(function(){
+            
+            $('#addPhoneModal').hide();
+         });
+
+         $("#editPhoneForm").submit(function(event){
+            event.preventDefault();
+            $.post('/phone', $(this).serialize(), function(){  
+            }).done(function(response){
+                if(response.updated){
+                    let updatedRow = buildRow(response);
+                    $("#row-phone-"+response.id).html(updatedRow);
+                }                
+            });
+        });
+
+
+         $("#editPhoneClose").click(function(){
+            
+            $('#editPhoneModal').hide();
+         });
+     });
+  </script>
+<body>

@@ -12,21 +12,28 @@
 
 ActiveRecord::Schema.define(version: 2023_03_02_231446) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "addresses", force: :cascade do |t|
     t.string "street"
     t.string "town"
     t.string "zipCode"
     t.string "state"
     t.string "country"
+    t.bigint "person_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["person_id"], name: "index_addresses_on_person_id"
   end
 
   create_table "emails", force: :cascade do |t|
     t.string "emailAddress"
     t.string "comment"
+    t.bigint "person_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["person_id"], name: "index_emails_on_person_id"
   end
 
   create_table "people", force: :cascade do |t|
@@ -44,8 +51,13 @@ ActiveRecord::Schema.define(version: 2023_03_02_231446) do
   create_table "phones", force: :cascade do |t|
     t.string "phoneNumber"
     t.string "comment"
+    t.bigint "person_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["person_id"], name: "index_phones_on_person_id"
   end
 
+  add_foreign_key "addresses", "people"
+  add_foreign_key "emails", "people"
+  add_foreign_key "phones", "people"
 end

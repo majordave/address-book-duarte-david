@@ -4,6 +4,8 @@ class CreatePhones < ActiveRecord::Migration[6.1]
       t.string :phoneNumber
       t.string :comment
 
+      t.belongs_to :person, foreign_key: true
+
       t.timestamps
     end
   end

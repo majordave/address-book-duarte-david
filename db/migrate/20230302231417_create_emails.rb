@@ -4,6 +4,8 @@ class CreateEmails < ActiveRecord::Migration[6.1]
       t.string :emailAddress
       t.string :comment
 
+      t.belongs_to :person, foreign_key: true
+
       t.timestamps
     end
   end

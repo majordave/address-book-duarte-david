@@ -6,9 +6,9 @@
     </nav>
     <div class="container">   
         <div id="addPersonModal">
-            <h3>Add Person Modal</h3>
-        
-            <%= form_with url: 'person', model: @person do |form| %>
+            <h3>Add New Person</h3>
+            <%= form_with url: 'person', html: {id: "addPersonForm"}, model: @person do |form| %>
+                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
                 <label for="salutation">Salutation</label>
                 <%= form.select :salutation, ['Mr.', 'Mrs.', 'Ms.'] %>
                 <%= form.text_field :firstName, placeholder: "First Name" %>
@@ -16,10 +16,29 @@
                 <%= form.text_field :lastName, placeholder: "Last Name" %>
                 <%= form.text_field :ssn, placeholder: "SSN" %>
                 <label for="birthDate">Birth Date</label>
-                <%= form.date_select :birthDate%>
-                <%= form.text_area :comment, size: "10x10" %>
+                <%= form.date_select :birthDate, start_year: 1950 %>
+                <%= form.text_area :comment, size: "10x2" %>
                 <%= form.submit %>
             <% end %>
+            <button id="addPersonClose" class="btn btn-danger">Close</button>
+        </div>
+        <div id="editPersonModal">
+            <h3>Edit Person</h3>
+            <%= form_with url: 'person', method: 'put', html: {id: "editPersonForm"}, model: @person do |form| %>
+                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                <label for="salutation">Salutation</label>
+                <%= form.select :salutation, ['Mr.', 'Mrs.', 'Ms.'] %>
+                <%= form.text_field :firstName, placeholder: "First Name" %>
+                <%= form.text_field :middleName, placeholder: "Middle Name" %>
+                <%= form.text_field :lastName, placeholder: "Last Name" %>
+                <%= form.text_field :ssn, placeholder: "SSN" %>
+                <label for="birthDate">Birth Date</label>
+                <%= form.date_select :birthDate, start_year: 1950 %>
+                <%= form.text_area :comment, size: "10x2" %>
+                <%= form.hidden_field :id %>
+                <%= form.submit %>
+            <% end %>
+            <button id="editPersonClose" class="btn btn-danger">Close</button>
         </div>
 
         <div class="table-responsives">
@@ -29,29 +48,34 @@
                         <h2>Manage Contacts</b></h2>
                     </div>
                     <div class="col-xs-6">
-                        <a href="#addPersonModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Person</span></a>
-                        <a href="#deletePersonModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Delete</span></a>						
+                        <a id="addPersonButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Person</span></a>                        
                     </div>
 
                     <table>
                         <thead>
                             <tr>
-                                <th>Name</th>                        
-                                <th>Address</th>
-                                <th>Email</th>
-                                <th>Phone</th>
+                                <th>Name</th> 
+                                <th>SSN</th>    
+                                <th>Birth Date</th>                       
+                                <th>Comment</th>                       
+                                <th>Addresses</th>
+                                <th>Emails</th>
+                                <th>Phones</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="peopleTableBody">
                             <% @people.each do |person| %>
-                                <tr>
+                                <tr id="row-person-<%= person.id %>">
                                     <td><%= person.fullName %></td>
-                                    <td>ADD</td>
-                                    <td>Ema</td>
-                                    <td>Pho</td>
-                                    <td>Edit <%= button_to "Delete", {:controller => :person,
-      :action => 'delete', :id => person.id }, :method => :delete, class: "btn btn-danger"%></td>
+                                    <td><%= person.ssn %></td>
+                                    <td><%= person.birthDate %></td>
+                                    <td><%= person.comment %></td>
+                                    <td><a class="btn btn-info" href="person/<%= person.id %>/addresses">View</a></td>
+                                    <td><a class="btn btn-info" href="person/<%= person.id %>/emails">View</a></td>
+                                    <td><a class="btn btn-info" href="person/<%= person.id %>/phones">View</a></td>
+                                    <td><span><button class="btn btn-warning editPersonButton" data-person-id="<%= person.id %>">Edit</button></span><span><%= button_to "Delete", {:controller => :person,
+      :action => 'delete', :id => person.id }, :method => :delete, class: "btn btn-danger"%></span></td>
                                 </tr>
                             <% end %>
                         </tbody>
@@ -60,4 +84,81 @@
             </div>
         </div>
     </div>
+    <script
+        src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+        crossorigin="anonymous"></script>
+    <script>
+     window.jQuery = window.$ = jQuery;
+
+    function buildRow(data){
+        let deleteBtn = '<form class="button_to" method="post" action="/person/'+data.id+'"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
+        let row = "<td>"+data.fullName+"</td><td>"+data.ssn+"</td><td>"+data.birthDate+"</td><td>"+data.comment+"</td><td><a class=\"btn btn-info\" href=\"person/"+data.id+"/addresses\">View</a></td><td>Ema</td><td>Pho</td><td><span><button class=\"btn btn-warning editPersonButton\" data-person-id=\""+data.id+"\">Edit</button></span><span>"+deleteBtn+"</span></td>";
+        return row;
+    }
+
+    $(document).on('click', ".editPersonButton", function(){
+        $('#addPersonModal').hide();
+        $.get('person/'+$(this).data('person-id'), function(){
+            }).done(function(response){            
+                $('#editPersonForm select[id="salutation"]').val(response.salutation).change();
+
+                let birthDate = new Date(response.birthDate);            
+
+                $('#editPersonForm select[id="_birthDate_1i"]').val(birthDate.getFullYear()).change();
+                $('#editPersonForm select[id="_birthDate_2i"]').val(birthDate.getMonth()+1).change();
+                $('#editPersonForm select[id="_birthDate_3i"]').val(birthDate.getDay()).change();
+
+                $('#editPersonForm input[id="firstName"]').val(response.firstName);
+                $('#editPersonForm input[id="middleName"]').val(response.middleName);
+                $('#editPersonForm input[id="lastName"]').val(response.lastName);
+                $('#editPersonForm input[id="ssn"]').val(response.ssn);
+                $('#editPersonForm textarea[id="comment"]').val(response.comment);
+                $('#editPersonForm input[id="id"]').val(response.id);
+                $('#editPersonModal').show();
+            });
+    });
+
+     $(document).ready(function() {
+
+        $("#addPersonForm").submit(function(event){
+            event.preventDefault();
+            $.post('person', $(this).serialize(), function(){  
+            }).done(function(response){
+                if(response.created){
+                    newRow = buildRow(response);
+                    $('#peopleTableBody').append('<tr>'+newRow+'</tr>');
+                }                
+            });
+        });
+
+         $("#addPersonButton").click(function(){
+            
+            $('#addPersonModal').show();
+            $('#editPersonModal').hide();
+         });
+
+         $("#addPersonClose").click(function(){
+            
+            $('#addPersonModal').hide();
+         });
+
+         $("#editPersonForm").submit(function(event){
+            event.preventDefault();
+            $.post('person', $(this).serialize(), function(){  
+            }).done(function(response){
+                if(response.updated){
+                    let updatedRow = buildRow(response);
+                    $("#row-person-"+response.id).html(updatedRow);
+                }                
+            });
+        });
+
+
+         $("#editPersonClose").click(function(){
+            
+            $('#editPersonModal').hide();
+         });
+     });
+  </script>
 <body>

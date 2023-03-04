@@ -7,6 +7,8 @@ class CreateAddresses < ActiveRecord::Migration[6.1]
       t.string :state
       t.string :country
 
+      t.belongs_to :person, foreign_key: true
+
       t.timestamps
     end
   end
