@@ -1,99 +1,163 @@
-<head>
-</head>
-<body>
-    <nav>
-    <h1>Address Book</h1>
-    </nav>
-    <div class="container">   
-        <div id="addPersonModal">
-            <h3>Add New Person</h3>
-            <%= form_with url: 'person', html: {id: "addPersonForm"}, model: @person do |form| %>
-                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-                <label for="salutation">Salutation</label>
-                <%= form.select :salutation, ['Mr.', 'Mrs.', 'Ms.'] %>
-                <%= form.text_field :firstName, placeholder: "First Name" %>
-                <%= form.text_field :middleName, placeholder: "Middle Name" %>
-                <%= form.text_field :lastName, placeholder: "Last Name" %>
-                <%= form.text_field :ssn, placeholder: "SSN" %>
-                <label for="birthDate">Birth Date</label>
-                <%= form.date_select :birthDate, start_year: 1950 %>
-                <%= form.text_area :comment, size: "10x2" %>
-                <%= form.submit %>
-            <% end %>
-            <button id="addPersonClose" class="btn btn-danger">Close</button>
-        </div>
-        <div id="editPersonModal">
-            <h3>Edit Person</h3>
-            <%= form_with url: 'person', method: 'put', html: {id: "editPersonForm"}, model: @person do |form| %>
-                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-                <label for="salutation">Salutation</label>
-                <%= form.select :salutation, ['Mr.', 'Mrs.', 'Ms.'] %>
-                <%= form.text_field :firstName, placeholder: "First Name" %>
-                <%= form.text_field :middleName, placeholder: "Middle Name" %>
-                <%= form.text_field :lastName, placeholder: "Last Name" %>
-                <%= form.text_field :ssn, placeholder: "SSN" %>
-                <label for="birthDate">Birth Date</label>
-                <%= form.date_select :birthDate, start_year: 1950 %>
-                <%= form.text_area :comment, size: "10x2" %>
-                <%= form.hidden_field :id %>
-                <%= form.submit %>
-            <% end %>
-            <button id="editPersonClose" class="btn btn-danger">Close</button>
-        </div>
-
-        <div class="table-responsives">
-            <div class="table-title">
-                <div class="row">
-                    <div class="col-xs-6">
-                        <h2>Manage Contacts</b></h2>
+<% content_for :modals do %>
+    <div class="modal" id="addPersonModal" tabindex="-1">
+            <div class="modal-dialog">            
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Person</h5>
                     </div>
-                    <div class="col-xs-6">
-                        <a id="addPersonButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Person</span></a>                        
+                    <div class="modal-body">
+                        <%= form_with url: 'person', html: {id: "addPersonForm"}, model: @person do |form| %>
+                            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                            <div class="mb-3">
+                                <label for="salutation" class="form-label">Salutation</label>
+                                <%= form.select :salutation, ['Mr.', 'Mrs.', 'Ms.'], {}, class: 'form-select' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :firstName, placeholder: "First Name", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :middleName, placeholder: "Middle Name", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :lastName, placeholder: "Last Name", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :ssn, placeholder: "SSN", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <label for="birthDate" class="form-label">Birth Date</label>
+                                <div>
+                                    <%= form.date_select :birthDate, {start_year: 1950}, {class: 'form-select date-select'} %>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <%= form.text_area :comment, size: "10x2", placeholder: 'Write comments here...', class: 'form-control' %>
+                            </div>                                                                 
                     </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th> 
-                                <th>SSN</th>    
-                                <th>Birth Date</th>                       
-                                <th>Comment</th>                       
-                                <th>Addresses</th>
-                                <th>Emails</th>
-                                <th>Phones</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="peopleTableBody">
-                            <% @people.each do |person| %>
-                                <tr id="row-person-<%= person.id %>">
-                                    <td><%= person.fullName %></td>
-                                    <td><%= person.ssn %></td>
-                                    <td><%= person.birthDate %></td>
-                                    <td><%= person.comment %></td>
-                                    <td><a class="btn btn-info" href="person/<%= person.id %>/addresses">View</a></td>
-                                    <td><a class="btn btn-info" href="person/<%= person.id %>/emails">View</a></td>
-                                    <td><a class="btn btn-info" href="person/<%= person.id %>/phones">View</a></td>
-                                    <td><span><button class="btn btn-warning editPersonButton" data-person-id="<%= person.id %>">Edit</button></span><span><%= button_to "Delete", {:controller => :person,
-      :action => 'delete', :id => person.id }, :method => :delete, class: "btn btn-danger"%></span></td>
-                                </tr>
-                            <% end %>
-                        </tbody>
-                    </table>
+                    <div class="modal-footer">
+                        <div class="row w-100">
+                            <div class="col">
+                                <%= form.submit 'Save', class: 'btn btn-success' %>
+                                <% end %>           
+                            </div>
+                            <div class="col text-end">
+                                <button id="addPersonClose" class="btn btn-danger">Close</button>            
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script
-        src="https://code.jquery.com/jquery-3.6.3.min.js"
-        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-        crossorigin="anonymous"></script>
-    <script>
-     window.jQuery = window.$ = jQuery;
 
+        <div class="modal" id="editPersonModal" tabindex="-1">
+            <div class="modal-dialog">            
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Person</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%= form_with url: 'person', method: 'put', html: {id: "editPersonForm"}, model: @person do |form| %>
+                            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                            <%= form.hidden_field :id %>
+                            <div class="mb-3">
+                                <label for="salutation" class="form-label">Salutation</label>
+                                <%= form.select :salutation, ['Mr.', 'Mrs.', 'Ms.'], {}, class: 'form-select' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :firstName, placeholder: "First Name", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :middleName, placeholder: "Middle Name", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :lastName, placeholder: "Last Name", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :ssn, placeholder: "SSN", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <label for="birthDate" class="form-label">Birth Date</label>
+                                <div>
+                                    <%= form.date_select :birthDate, {start_year: 1950}, {class: 'form-select date-select'} %>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <%= form.text_area :comment, size: "10x2", placeholder: 'Write comments here...', class: 'form-control' %>
+                            </div>                                                                 
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row w-100">
+                            <div class="col">                                
+                                <%= form.submit 'Save', class: 'btn btn-success' %>
+                                <% end %>           
+                            </div>
+                            <div class="col text-end">
+                                <button id="editPersonClose" class="btn btn-danger">Close</button>            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<% end %>
+<% content_for :page_title do %>
+    <div class="row">
+            <div class="col">
+              <h3>Manage Contacts</h3>  
+            </div>                    
+            <div class="col text-end">
+                <div>
+                <a id="addPersonButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Person</span></a>                        
+                </div>
+            </div>
+    </div>    
+<% end %>
+<% content_for :table do %>
+<table class="table table-light">
+    <thead>
+        <tr>
+            <th>Name</th> 
+            <th>SSN</th>    
+            <th>Birth Date</th>                       
+            <th>Comment</th>                       
+            <th>Addresses</th>
+            <th>Emails</th>
+            <th>Phones</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody id="peopleTableBody">
+        <% @people.each do |person| %>
+            <tr id="row-person-<%= person.id %>">
+                <td><%= person.fullName %></td>
+                <td><%= person.ssn %></td>
+                <td><%= person.birthDate %></td>
+                <td><%= person.comment %></td>
+                <td><a class="btn btn-info" href="person/<%= person.id %>/addresses">View</a></td>
+                <td><a class="btn btn-info" href="person/<%= person.id %>/emails">View</a></td>
+                <td><a class="btn btn-info" href="person/<%= person.id %>/phones">View</a></td>
+                <td class="text-center">
+                    <button class="btn btn-warning editPersonButton" data-person-id="<%= person.id %>">Edit</button>                                                 
+                    <%= button_to "Delete", {:controller => :person,
+:action => 'delete', :id => person.id }, :method => :delete, class: "btn btn-danger"%>                                                                            
+                </td>
+            </tr>
+        <% end %>
+    </tbody>
+</table>
+<% end %>
+
+<% content_for :body_end do %>
+<script>
     function buildRow(data){
-        let deleteBtn = '<form class="button_to" method="post" action="/person/'+data.id+'"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
-        let row = "<td>"+data.fullName+"</td><td>"+data.ssn+"</td><td>"+data.birthDate+"</td><td>"+data.comment+"</td><td><a class=\"btn btn-info\" href=\"person/"+data.id+"/addresses\">View</a></td><td>Ema</td><td>Pho</td><td><span><button class=\"btn btn-warning editPersonButton\" data-person-id=\""+data.id+"\">Edit</button></span><span>"+deleteBtn+"</span></td>";
+        let deleteBtn = '<form class="button_to" method="post" action="/person/'+data.id+
+            '"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
+        
+        let row = "<td>"+data.fullName+"</td><td>"+data.ssn+"</td><td>"+data.birthDate+"</td><td>"+data.comment+"</td><td><a class=\"btn btn-info\" href=\"person/"+data.id+
+            "/addresses\">View</a></td><td><a class=\"btn btn-info\" href=\"person/"+data.id+"/emails\">View</a></td><td><a class=\"btn btn-info\" href=\"person/"+data.id+
+            "/phones\">View</a></td><td class=\"text-center\"><button class=\"btn btn-warning editPersonButton\" data-person-id=\""+data.id+"\">Edit</button>\n"+deleteBtn+"</td>";
         return row;
     }
 
@@ -103,11 +167,11 @@
             }).done(function(response){            
                 $('#editPersonForm select[id="salutation"]').val(response.salutation).change();
 
-                let birthDate = new Date(response.birthDate);            
+                let birthDate = new Date(response.birthDate+' 00:00:00');                    
 
                 $('#editPersonForm select[id="_birthDate_1i"]').val(birthDate.getFullYear()).change();
                 $('#editPersonForm select[id="_birthDate_2i"]').val(birthDate.getMonth()+1).change();
-                $('#editPersonForm select[id="_birthDate_3i"]').val(birthDate.getDay()).change();
+                $('#editPersonForm select[id="_birthDate_3i"]').val(birthDate.getDate()).change();
 
                 $('#editPersonForm input[id="firstName"]').val(response.firstName);
                 $('#editPersonForm input[id="middleName"]').val(response.middleName);
@@ -126,14 +190,29 @@
             $.post('person', $(this).serialize(), function(){  
             }).done(function(response){
                 if(response.created){
+                    $('#addPersonModal').hide();
+
                     newRow = buildRow(response);
-                    $('#peopleTableBody').append('<tr>'+newRow+'</tr>');
+                    $('#peopleTableBody').append('<tr id="row-person-'+response.id+'">'+newRow+'</tr>');
                 }                
             });
         });
 
          $("#addPersonButton").click(function(){
             
+            $('#addPersonForm select[id="salutation"]').val('Mr.').change();
+
+            let birthDate = new Date();            
+
+            $('#addPersonForm select[id="_birthDate_1i"]').val(birthDate.getFullYear()).change();
+            $('#addPersonForm select[id="_birthDate_2i"]').val(birthDate.getMonth()+1).change();
+            $('#addPersonForm select[id="_birthDate_3i"]').val(birthDate.getDate()).change();
+
+            $('#addPersonForm input[id="firstName"]').val('');
+            $('#addPersonForm input[id="middleName"]').val('');
+            $('#addPersonForm input[id="lastName"]').val('');
+            $('#addPersonForm input[id="ssn"]').val('');
+            $('#addPersonForm textarea[id="comment"]').val('');            
             $('#addPersonModal').show();
             $('#editPersonModal').hide();
          });
@@ -148,6 +227,8 @@
             $.post('person', $(this).serialize(), function(){  
             }).done(function(response){
                 if(response.updated){
+                     $('#editPersonModal').hide();
+
                     let updatedRow = buildRow(response);
                     $("#row-person-"+response.id).html(updatedRow);
                 }                
@@ -161,4 +242,4 @@
          });
      });
   </script>
-<body>
+  <% end %>

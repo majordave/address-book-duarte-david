@@ -1,80 +1,122 @@
-<head>
-</head>
-<body>
-    <nav>
-    <h1>Address Book</h1>
-    </nav>    
-    <div class="container">   
-        <div id="addPhoneModal">
-            <h3>Add New Phone</h3>
-            <%= form_with url: 'phones', html: {id: "addPhoneForm"}, model: @phone do |form| %>
-                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
-                <%= form.text_field :phoneNumber, placeholder: "Phone Number" %>
-                <%= form.text_area :comment, placeholder: "Comment", size: "10x2" %>
-                <%= form.hidden_field :person_id, value: params[:id] %>
-                <%= form.submit %>
-            <% end %>
-            <button id="addPhoneClose" class="btn btn-danger">Close</button>
-        </div>
-        <div id="editPhoneModal">
-            <h3>Edit Phone</h3>
-            <%= form_with url: 'phone', method: 'put', html: {id: "editPhoneForm"}, model: @phone do |form| %>
-                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
-                <%= form.text_field :phoneNumber, placeholder: "Phone Number" %>
-                <%= form.text_area :comment, placeholder: "Comment", size: "10x2" %>
-                <%= form.hidden_field :person_id, value: params[:id] %>                                             
-                <%= form.hidden_field :id %>
-                <%= form.submit %>
-            <% end %>
-            <button id="editPhoneClose" class="btn btn-danger">Close</button>
-        </div>
-
-        <div class="table-responsives">
-            <div class="table-title">
-                <div class="row">
-                    <div class="col-xs-6">
-                        <h2>Manage <%= @person.fullName  %>'s Phones</b></h2>
+<% content_for :modals do %>
+    <div class="modal" id="addPhoneModal" tabindex="-1">
+            <div class="modal-dialog">            
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Phone</h5>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <a id="addPhoneButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Phone</span></a>                        
+                    <div class="modal-body">                        
+                        <%= form_with url: 'phones', html: {id: "addPhoneForm"}, model: @phone do |form| %>
+                            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                            <%= form.hidden_field :person_id, value: params[:id] %>                                                  
+                            <div class="mb-3">
+                                <%= form.text_field :phoneNumber, placeholder: "Phone Number", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <%= form.text_area :comment, size: "10x2", placeholder: 'Write comments here...', class: 'form-control' %>
+                            </div>                                                       
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row w-100">
+                            <div class="col">
+                                <%= form.submit 'Save', class: 'btn btn-success' %>
+                                <% end %>           
+                            </div>
+                            <div class="col text-end">
+                                <button id="addPhoneClose" class="btn btn-danger">Close</button>            
+                            </div>
                         </div>
-                        <div class="col-xs-6">
-                            <a id="addPhoneButton" class="btn btn-info" data-toggle="modal" href="/address_book"> <span>Return</span></a>                        
-                        </div>  
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Phone Number</th> 
-                                <th>Comment</th>                                    
-                            </tr>
-                        </thead>
-                        <tbody id="phoneTableBody">
-                            <% @phones.each do |phone| %>
-                                <tr id="row-phone-<%= phone.id %>">
-                                    <td><%= phone.phoneNumber %></td>
-                                    <td><%= phone.comment %></td>                                    
-                                    <td><span><button class="btn btn-warning editPhoneButton" data-phone-id="<%= phone.id %>">Edit</button></span><span><%= button_to "Delete", {:controller => :phone,
-      :action => 'delete', :id => phone.id }, :method => :delete, class: "btn btn-danger"%></span></td>
-                                </tr>
-                            <% end %>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
-    </div>
-    <script
-        src="https://code.jquery.com/jquery-3.6.3.min.js"
-        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-        crossorigin="anonymous"></script>
-    <script>
-     window.jQuery = window.$ = jQuery;
 
+         <div class="modal" id="editPhoneModal" tabindex="-1">
+            <div class="modal-dialog">            
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Phone</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%= form_with url: 'phone', method: 'put', html: {id: "editPhoneForm"}, model: @phone do |form| %>
+                            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                            <%= form.hidden_field :person_id, value: params[:id] %>
+                            <%= form.hidden_field :id %>
+                           <div class="mb-3">
+                                <%= form.text_field :phoneNumber, placeholder: "Phone Number", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <%= form.text_area :comment, size: "10x2", placeholder: 'Write comments here...', class: 'form-control' %>
+                            </div>                                                                                                                                                                                   
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row w-100">
+                            <div class="col">                                
+                                <%= form.submit 'Save', class: 'btn btn-success' %>
+                                <% end %>           
+                            </div>
+                            <div class="col text-end">
+                                <button id="editPhoneClose" class="btn btn-danger">Close</button>            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<% end %>
+    
+<% content_for :page_title do %>
+    <div class="row">
+                <div class="col">
+                    <h3>Manage <%= @person.fullName  %>'s Phones</h3>
+                </div>                    
+                <div class="col text-end">
+                    <div>
+                    <a id="addPhoneButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Phone</span></a>                        
+                    </div>
+                </div>
+                <div class="row">                        
+                    <div class="col-xs-6">
+                        <a id="addPhoneButton" class="btn btn-info" data-toggle="modal" href="/address_book"> <span>Return</span></a>                        
+                    </div>  
+                </div>
+        </div>   
+<% end %>
+
+<% content_for :table do %> 
+    <table class="table table-light">
+        <thead>
+            <tr>
+                <th>Phone Number</th> 
+                <th>Comment</th>                     
+                <th class="text-center">Action</th>               
+            </tr>            
+        </thead>
+        <tbody id="phoneTableBody">
+                <% @phones.each do |phone| %>
+                <tr id="row-phone-<%= phone.id %>">
+                    <td><%= phone.phoneNumber %></td>
+                    <td><%= phone.comment %></td>                            
+                    <td class="text-center">
+                        <button class="btn btn-warning editPhoneButton" data-phone-id="<%= phone.id %>">Edit</button>                    
+                        <%= button_to "Delete", {:controller => :phone,
+    :action => 'delete', :id => phone.id }, :method => :delete, class: "btn btn-danger"%>                                                                            
+                    </td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>       
+<% end %>             
+
+<% content_for :body_end do %>    
+    <script>
     function buildRow(data){
-        let deleteBtn = '<form class="button_to" method="post" action="/phone/'+data.id+'"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
-        let row = "<td>"+data.phoneNumber+"</td><td>"+data.comment+"</td><td><span><button class=\"btn btn-warning editPhoneButton\" data-phone-id=\""+data.id+"\">Edit</button></span><span>"+deleteBtn+"</span></td>";
+        let deleteBtn = '<form class="button_to" method="post" action="/phone/'+data.id+
+            '"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
+        let row = "<td>"+data.phoneNumber+"</td><td>"+data.comment+"</td><td class=\"text-center\"><button class=\"btn btn-warning editPhoneButton\" data-phone-id=\""+
+            data.id+"\">Edit</button>\n"+deleteBtn+"</td>";
         return row;
     }
 
@@ -97,14 +139,19 @@
             $.post('phones', $(this).serialize(), function(){  
             }).done(function(response){
                 if(response.created){
+                    $('#addPhoneModal').hide();
+
                     newRow = buildRow(response);
-                    $('#phoneTableBody').append('<tr>'+newRow+'</tr>');
+                    $('#phoneTableBody').append('<tr id="row-phone-'+response.id+'">'+newRow+'</tr>');
                 }                
             });
         });
 
          $("#addPhoneButton").click(function(){
             
+            $('#addPhoneForm input[id="phoneNumber"]').val('');
+            $('#addPhoneForm textArea[id="comment"]').val('');    
+
             $('#addPhoneModal').show();
             $('#editPhoneModal').hide();
          });
@@ -119,6 +166,8 @@
             $.post('/phone', $(this).serialize(), function(){  
             }).done(function(response){
                 if(response.updated){
+                    $('#editPhoneModal').hide();
+
                     let updatedRow = buildRow(response);
                     $("#row-phone-"+response.id).html(updatedRow);
                 }                
@@ -132,4 +181,4 @@
          });
      });
   </script>
-<body>
+<% end %>

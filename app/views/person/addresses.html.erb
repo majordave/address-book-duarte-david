@@ -1,92 +1,150 @@
-<head>
-</head>
-<body>
-    <nav>
-    <h1>Address Book</h1>
-    </nav>    
-    <div class="container">   
-        <div id="addAddressModal">
-            <h3>Add New Address</h3>
-            <%= form_with url: 'addresses', html: {id: "addAddressForm"}, model: @address do |form| %>
-                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
-                <%= form.text_field :street, placeholder: "Street" %>
-                <%= form.text_field :town, placeholder: "Town" %>
-                <%= form.text_field :zipCode, placeholder: "Zip Code" %>                                
-                <%= form.text_field :state, placeholder: "State" %>                                
-                <%= form.select :country, @countryList %>                                
-                <%= form.hidden_field :person_id, value: params[:id] %>
-                <%= form.submit %>
-            <% end %>
-            <button id="addAddressClose" class="btn btn-danger">Close</button>
-        </div>
-        <div id="editAddressModal">
-            <h3>Edit Address</h3>
-            <%= form_with url: 'address', method: 'put', html: {id: "editAddressForm"}, model: @address do |form| %>
-                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
-                <%= form.text_field :street, placeholder: "Street" %>
-                <%= form.text_field :town, placeholder: "Town" %>
-                <%= form.text_field :zipCode, placeholder: "Zip Code" %>                                
-                <%= form.text_field :state, placeholder: "State" %>                                
-                <%= form.select :country, @countryList %>         
-                <%= form.hidden_field :person_id, value: params[:id] %>                                             
-                <%= form.hidden_field :id %>
-                <%= form.submit %>
-            <% end %>
-            <button id="editAddressClose" class="btn btn-danger">Close</button>
-        </div>
-
-        <div class="table-responsives">
-            <div class="table-title">
-                <div class="row">
-                    <div class="col-xs-6">
-                        <h2>Manage <%= @person.fullName  %>'s Addresses</b></h2>
+<% content_for :modals do %>
+    <div class="modal" id="addAddressModal" tabindex="-1">
+            <div class="modal-dialog">            
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Address</h5>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <a id="addAddressButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Address</span></a>                        
+                    <div class="modal-body">                        
+                        <%= form_with url: 'addresses', html: {id: "addAddressForm"}, model: @address do |form| %>
+                            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                            <%= form.hidden_field :person_id, value: params[:id] %>
+                            <div class="mb-3">
+                                <%= form.text_field :street, placeholder: "Street" , class: 'form-control' %>                                
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :town, placeholder: "Town", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :zipCode, placeholder: "Zip Code", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :state, placeholder: "State", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <label for="country" class="form-label">Country</label>
+                                <%= form.select :country, @countryList, {}, class: 'form-select' %>                                
+                            </div>                                                                                                                         
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row w-100">
+                            <div class="col">
+                                <%= form.submit 'Save', class: 'btn btn-success' %>
+                                <% end %>           
+                            </div>
+                            <div class="col text-end">
+                                <button id="addAddressClose" class="btn btn-danger">Close</button>            
+                            </div>
                         </div>
-                        <div class="col-xs-6">
-                            <a id="addAddressButton" class="btn btn-info" data-toggle="modal" href="/address_book"> <span>Return</span></a>                        
-                        </div>  
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Street</th> 
-                                <th>Town</th>    
-                                <th>Zip Code</th>                       
-                                <th>State</th>                       
-                                <th>Country</th>                                
-                            </tr>
-                        </thead>
-                        <tbody id="addressTableBody">
-                            <% @addresses.each do |address| %>
-                                <tr id="row-address-<%= address.id %>">
-                                    <td><%= address.street %></td>
-                                    <td><%= address.town %></td>
-                                    <td><%= address.zipCode %></td>
-                                    <td><%= address.state %></td>
-                                    <td><%= address.country %></td>                                
-                                    <td><span><button class="btn btn-warning editAddressButton" data-address-id="<%= address.id %>">Edit</button></span><span><%= button_to "Delete", {:controller => :address,
-      :action => 'delete', :id => address.id }, :method => :delete, class: "btn btn-danger"%></span></td>
-                                </tr>
-                            <% end %>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
-    </div>
-    <script
-        src="https://code.jquery.com/jquery-3.6.3.min.js"
-        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-        crossorigin="anonymous"></script>
-    <script>
-     window.jQuery = window.$ = jQuery;
 
+        <div class="modal" id="editAddressModal" tabindex="-1">
+            <div class="modal-dialog">            
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Person</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%= form_with url: 'address', method: 'put', html: {id: "editAddressForm"}, model: @address do |form| %>
+                            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                            <%= form.hidden_field :person_id, value: params[:id] %>
+                            <%= form.hidden_field :id %>
+                            <div class="mb-3">
+                                <%= form.text_field :street, placeholder: "Street" , class: 'form-control' %>                                
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :town, placeholder: "Town", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :zipCode, placeholder: "Zip Code", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <%= form.text_field :state, placeholder: "State", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <label for="country" class="form-label">Country</label>
+                                <%= form.select :country, @countryList, {}, class: 'form-select' %>                                
+                            </div>                                                                                                                                                                                        
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row w-100">
+                            <div class="col">                                
+                                <%= form.submit 'Save', class: 'btn btn-success' %>
+                                <% end %>           
+                            </div>
+                            <div class="col text-end">
+                                <button id="editAddressClose" class="btn btn-danger">Close</button>            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<% end %>
+
+    <% content_for :page_title do %>
+        <div class="row">
+                <div class="col">
+                    <h3>Manage <%= @person.fullName  %>'s Addresses</h3>
+                </div>                    
+                <div class="col text-end">
+                    <div>
+                    <a id="addAddressButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Address</span></a>                        
+                    </div>
+                </div>
+                <div class="row">                        
+                    <div class="col-xs-6">
+                        <a id="addAddressButton" class="btn btn-info" data-toggle="modal" href="/address_book"> <span>Return</span></a>                        
+                    </div>  
+                </div>
+        </div>    
+    <% end %>
+
+    <% content_for :table do %>
+
+    <table class="table table-light">
+        <thead>
+            <tr>
+                <th>Street</th> 
+                <th>Town</th>    
+                <th>Zip Code</th>                       
+                <th>State</th>                       
+                <th>Country</th>        
+                <th class="text-center">Action</th>                        
+            </tr>
+            </tr>
+        </thead>
+        <tbody id="addressTableBody">
+                <% @addresses.each do |address| %>
+                    <tr id="row-address-<%= address.id %>">
+                    <td><%= address.street %></td>
+                    <td><%= address.town %></td>
+                    <td><%= address.zipCode %></td>
+                    <td><%= address.state %></td>
+                    <td><%= address.country %></td>                          
+                    <td class="text-center">
+                        <button class="btn btn-warning editAddressButton" data-address-id="<%= address.id %>">Edit</button>                                                    
+                        <%= button_to "Delete", {:controller => :address,
+    :action => 'delete', :id => address.id }, :method => :delete, class: "btn btn-danger"%>                                                                            
+                    </td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+    <% end %>
+    
+
+    <% content_for :body_end do %>
+    <script>
     function buildRow(data){
-        let deleteBtn = '<form class="button_to" method="post" action="/address/'+data.id+'"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
-        let row = "<td>"+data.street+"</td><td>"+data.town+"</td><td>"+data.zipCode+"</td><td>"+data.state+"</td><td>"+data.country+"</td><td><span><button class=\"btn btn-warning editAddressButton\" data-address-id=\""+data.id+"\">Edit</button></span><span>"+deleteBtn+"</span></td>";
+        let deleteBtn = '<form class="button_to" method="post" action="/address/'+data.id+
+            '"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
+        
+        let row = "<td>"+data.street+"</td><td>"+data.town+"</td><td>"+data.zipCode+"</td><td>"+data.state+"</td><td>"+data.country+"</td><td class=\"text-center\"><button class=\"btn btn-warning editAddressButton\" data-address-id=\""+
+            data.id+"\">Edit</button>\n"+deleteBtn+"</td>";
         return row;
     }
 
@@ -112,14 +170,23 @@
             $.post('addresses', $(this).serialize(), function(){  
             }).done(function(response){
                 if(response.created){
+                    $('#addAddressModal').hide();
+
                     newRow = buildRow(response);
-                    $('#addressTableBody').append('<tr>'+newRow+'</tr>');
+                    $('#addressTableBody').append('<tr id="row-address-'+response.id+'">'+newRow+'</tr>');
                 }                
             });
         });
 
          $("#addAddressButton").click(function(){
             
+            $('#addAddressForm input[id="street"]').val('');
+            $('#addAddressForm input[id="town"]').val('');
+            $('#addAddressForm input[id="zipCode"]').val('');
+            $('#addAddressForm input[id="state"]').val('');
+            $('#addAddressForm select[id="country"]').val('Afghanistan').change();
+            $('#addAddressForm input[id="id"]').val('');
+
             $('#addAddressModal').show();
             $('#editAddressModal').hide();
          });
@@ -134,6 +201,8 @@
             $.post('/address', $(this).serialize(), function(){  
             }).done(function(response){
                 if(response.updated){
+                    $('#editAddressModal').hide();
+
                     let updatedRow = buildRow(response);
                     $("#row-address-"+response.id).html(updatedRow);
                 }                
@@ -147,4 +216,4 @@
          });
      });
   </script>
-<body>
+<% end %>

@@ -1,80 +1,123 @@
-<head>
-</head>
-<body>
-    <nav>
-    <h1>Address Book</h1>
-    </nav>    
-    <div class="container">   
-        <div id="addEmailModal">
-            <h3>Add New Email</h3>
-            <%= form_with url: 'emails', html: {id: "addEmailForm"}, model: @email do |form| %>
-                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
-                <%= form.text_field :emailAddress, placeholder: "Email Address" %>
-                <%= form.text_area :comment, placeholder: "Comment", size: "10x2" %>
-                <%= form.hidden_field :person_id, value: params[:id] %>
-                <%= form.submit %>
-            <% end %>
-            <button id="addEmailClose" class="btn btn-danger">Close</button>
-        </div>
-        <div id="editEmailModal">
-            <h3>Edit Email</h3>
-            <%= form_with url: 'email', method: 'put', html: {id: "editEmailForm"}, model: @email do |form| %>
-                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>                
-                <%= form.text_field :emailAddress, placeholder: "Email Address" %>
-                <%= form.text_area :comment, placeholder: "Comment", size: "10x2"  %>
-                <%= form.hidden_field :person_id, value: params[:id] %>                                             
-                <%= form.hidden_field :id %>
-                <%= form.submit %>
-            <% end %>
-            <button id="editEmailClose" class="btn btn-danger">Close</button>
-        </div>
-
-        <div class="table-responsives">
-            <div class="table-title">
-                <div class="row">
-                    <div class="col-xs-6">
-                        <h2>Manage <%= @person.fullName  %>'s Emails</b></h2>
+<% content_for :modals do %>
+    <div class="modal" id="addEmailModal" tabindex="-1">
+            <div class="modal-dialog">            
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Email</h5>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <a id="addEmailButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Email</span></a>                        
+                    <div class="modal-body">                        
+                        <%= form_with url: 'emails', html: {id: "addEmailForm"}, model: @email do |form| %>
+                            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                            <%= form.hidden_field :person_id, value: params[:id] %>                                                  
+                            <div class="mb-3">
+                                <%= form.text_field :emailAddress, placeholder: "Email Address", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <%= form.text_area :comment, size: "10x2", placeholder: 'Write comments here...', class: 'form-control' %>
+                            </div>                                                       
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row w-100">
+                            <div class="col">
+                                <%= form.submit 'Save', class: 'btn btn-success' %>
+                                <% end %>           
+                            </div>
+                            <div class="col text-end">
+                                <button id="addEmailClose" class="btn btn-danger">Close</button>            
+                            </div>
                         </div>
-                        <div class="col-xs-6">
-                            <a id="addEmailButton" class="btn btn-info" data-toggle="modal" href="/address_book"> <span>Return</span></a>                        
-                        </div>  
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Email Address</th> 
-                                <th>Comment</th>                                    
-                            </tr>
-                        </thead>
-                        <tbody id="emailTableBody">
-                            <% @emails.each do |email| %>
-                                <tr id="row-email-<%= email.id %>">
-                                    <td><%= email.emailAddress %></td>
-                                    <td><%= email.comment %></td>                                    
-                                    <td><span><button class="btn btn-warning editEmailButton" data-email-id="<%= email.id %>">Edit</button></span><span><%= button_to "Delete", {:controller => :email,
-      :action => 'delete', :id => email.id }, :method => :delete, class: "btn btn-danger"%></span></td>
-                                </tr>
-                            <% end %>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
-    </div>
-    <script
-        src="https://code.jquery.com/jquery-3.6.3.min.js"
-        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-        crossorigin="anonymous"></script>
-    <script>
-     window.jQuery = window.$ = jQuery;
 
-    function buildRow(data){
-        let deleteBtn = '<form class="button_to" method="post" action="/email/'+data.id+'"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
-        let row = "<td>"+data.emailAddress+"</td><td>"+data.comment+"</td><td><span><button class=\"btn btn-warning editEmailButton\" data-email-id=\""+data.id+"\">Edit</button></span><span>"+deleteBtn+"</span></td>";
+        <div class="modal" id="editEmailModal" tabindex="-1">
+            <div class="modal-dialog">            
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Person</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%= form_with url: 'email', method: 'put', html: {id: "editEmailForm"}, model: @email do |form| %>
+                            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                            <%= form.hidden_field :person_id, value: params[:id] %>
+                            <%= form.hidden_field :id %>
+                           <div class="mb-3">
+                                <%= form.text_field :emailAddress, placeholder: "Email Address", class: 'form-control' %>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <%= form.text_area :comment, size: "10x2", placeholder: 'Write comments here...', class: 'form-control' %>
+                            </div>                                                                                                                                                                                   
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row w-100">
+                            <div class="col">                                
+                                <%= form.submit 'Save', class: 'btn btn-success' %>
+                                <% end %>           
+                            </div>
+                            <div class="col text-end">
+                                <button id="editEmailClose" class="btn btn-danger">Close</button>            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<% end %>
+
+<% content_for :page_title do %>
+        <div class="row">
+                <div class="col">
+                    <h3>Manage <%= @person.fullName  %>'s Emails</h3>
+                </div>                    
+                <div class="col text-end">
+                    <div>
+                    <a id="addEmailButton" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Email</span></a>                        
+                    </div>
+                </div>
+                <div class="row">                        
+                    <div class="col-xs-6">
+                        <a id="addEmailButton" class="btn btn-info" data-toggle="modal" href="/address_book"> <span>Return</span></a>                        
+                    </div>  
+                </div>
+        </div>    
+<% end %>
+
+<% content_for :table do %>
+    <table class="table table-light">
+        <thead>
+            <tr>
+                <th>Email Address</th> 
+                <th>Comment</th>                     
+                <th class="text-center">Action</th>               
+            </tr>            
+        </thead>
+        <tbody id="emailTableBody">
+                <% @emails.each do |email| %>
+                <tr id="row-email-<%= email.id %>">
+                    <td><%= email.emailAddress %></td>
+                    <td><%= email.comment %></td>                           
+                    <td class="text-center">
+                        <button class="btn btn-warning editEmailButton" data-email-id="<%= email.id %>">Edit</button>                                              
+                        <%= button_to "Delete", {:controller => :email,
+    :action => 'delete', :id => email.id }, :method => :delete, class: "btn btn-danger"%>                                                                            
+                    </td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>              
+<% end %>
+
+<% content_for :body_end do %>
+    <script>
+    function buildRow(data){        
+        let deleteBtn = '<form class="button_to" method="post" action="/email/'+data.id+
+            '"><input type="hidden" name="_method" value="delete" autocomplete="off"><input class="btn btn-danger" type="submit" value="Delete"><%= hidden_field_tag :authenticity_token, form_authenticity_token %></form>';
+        
+        let row = "<td>"+data.emailAddress+"</td><td>"+data.comment+"</td><td class=\"text-center\"><button class=\"btn btn-warning editEmailButton\" data-email-id=\""+
+            data.id+"\">Edit</button>\n"+deleteBtn+"</td>";
         return row;
     }
 
@@ -97,14 +140,19 @@
             $.post('emails', $(this).serialize(), function(){  
             }).done(function(response){
                 if(response.created){
+                    $('#addEmailModal').hide();
+
                     newRow = buildRow(response);
-                    $('#emailTableBody').append('<tr>'+newRow+'</tr>');
+                    $('#emailTableBody').append('<tr id="row-email-'+response.id+'">'+newRow+'</tr>');
                 }                
             });
         });
 
          $("#addEmailButton").click(function(){
-            
+            $('#addEmailForm input[id="emailAddress"]').val('');
+            $('#addEmailForm textArea[id="comment"]').val(''); 
+
+
             $('#addEmailModal').show();
             $('#editEmailModal').hide();
          });
@@ -119,6 +167,8 @@
             $.post('/email', $(this).serialize(), function(){  
             }).done(function(response){
                 if(response.updated){
+                    $("#editEmailModal").hide();
+
                     let updatedRow = buildRow(response);
                     $("#row-email-"+response.id).html(updatedRow);
                 }                
@@ -132,4 +182,4 @@
          });
      });
   </script>
-<body>
+<% end %>
