@@ -14,7 +14,8 @@
     <nav>
     <h1>Address Book</h1>
     </nav>
-    <div class="container">   
+    <div class="container">
+        <%= yield %>   
         <%= yield :modals %>                
         <%= yield :page_title %>
         <div class="row pt-3">
@@ -22,7 +23,7 @@
             <%= yield :table %>
             </div>
         </div>        
-    </div><%# container %>
+    </div>
     <%= render "shared/jquery" %>
     <%= yield :body_end %>
   </body>

@@ -3,7 +3,9 @@ Rails.application.routes.draw do
   get 'person/:id', to: 'person#read'
   put 'person', to: 'person#update'
   delete 'person/:id', to: 'person#delete'
-  
+
+  root 'address_book#index'
+
   get '/address_book', to: 'address_book#index'
   get '/person/:id/addresses', to: 'person#addresses', as: 'person_addresses'
   post '/person/:id/addresses', to: 'address#create'
@@ -23,6 +25,11 @@ Rails.application.routes.draw do
   put 'phone', to: 'phone#update'
   delete 'phone/:id', to: 'phone#delete'
 
+  resources :users, only: [:new, :create]
+  get 'login', to: 'sessions#new'
+  post 'login', to: 'sessions#create'
+  get 'welcome', to: 'sessions#welcome'
+  get 'authorized', to: 'sessions#page_requires_login'
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end
