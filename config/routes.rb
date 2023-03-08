@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   post 'person', to: 'person#create'
-  get 'person/:id', to: 'person#read'
+  get 'person/:id', to: 'person#read', as: "person_read"
   put 'person', to: 'person#update'
-  delete 'person/:id', to: 'person#delete'
+  delete 'person/:id', to: 'person#delete', as: "person_delete"
 
   root 'address_book#index'
 
@@ -14,10 +14,10 @@ Rails.application.routes.draw do
   delete 'address/:id', to: 'address#delete'
   
   get '/person/:id/emails', to: 'person#emails', as: 'person_emails'
-  post '/person/:id/emails', to: 'email#create'
-  get 'email/:id', to: 'email#read'
+  post '/person/:id/emails', to: 'email#create', as: 'email_create'
+  get 'email/:id', to: 'email#read', as: 'email_read'
   put 'email', to: 'email#update'
-  delete 'email/:id', to: 'email#delete'
+  delete 'email/:id', to: 'email#delete', as: 'email_delete'
 
   get '/person/:id/phones', to: 'person#phones', as: 'person_phones'
   post '/person/:id/phones', to: 'phone#create'
@@ -29,7 +29,6 @@ Rails.application.routes.draw do
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
   get 'welcome', to: 'sessions#welcome'
-  get 'authorized', to: 'sessions#page_requires_login'
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

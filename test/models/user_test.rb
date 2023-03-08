@@ -1,7 +1,10 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "user creation works" do
+    user = User.new
+    user.username = "myUser"
+    user.password_digest = "ENCRYPTEDPASSWORDIGEST"
+    assert user.save
+  end
 end
