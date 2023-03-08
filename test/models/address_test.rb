@@ -12,6 +12,7 @@ class AddressTest < ActiveSupport::TestCase
     address.street = "Wall Street 123"
     address.town = "Smallville"
     address.zipCode = "72712"
+    address.state = "Texas"
     address.country = "United States"
     address.person_id = person.id
 

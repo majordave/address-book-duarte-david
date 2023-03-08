@@ -8,10 +8,10 @@ Rails.application.routes.draw do
 
   get '/address_book', to: 'address_book#index'
   get '/person/:id/addresses', to: 'person#addresses', as: 'person_addresses'
-  post '/person/:id/addresses', to: 'address#create'
-  get 'address/:id', to: 'address#read'
+  post '/person/:id/addresses', to: 'address#create', as: 'address_create'
+  get 'address/:id', to: 'address#read', as: 'address_read'
   put 'address', to: 'address#update'
-  delete 'address/:id', to: 'address#delete'
+  delete 'address/:id', to: 'address#delete', as: 'address_delete'
   
   get '/person/:id/emails', to: 'person#emails', as: 'person_emails'
   post '/person/:id/emails', to: 'email#create', as: 'email_create'
@@ -20,10 +20,10 @@ Rails.application.routes.draw do
   delete 'email/:id', to: 'email#delete', as: 'email_delete'
 
   get '/person/:id/phones', to: 'person#phones', as: 'person_phones'
-  post '/person/:id/phones', to: 'phone#create'
-  get 'phone/:id', to: 'phone#read'
+  post '/person/:id/phones', to: 'phone#create', as: 'phone_create'
+  get 'phone/:id', to: 'phone#read', as: 'phone_read'
   put 'phone', to: 'phone#update'
-  delete 'phone/:id', to: 'phone#delete'
+  delete 'phone/:id', to: 'phone#delete', as: 'phone_delete'
 
   resources :users, only: [:new, :create]
   get 'login', to: 'sessions#new'
